@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<port>1234</port>
+	<max_clients>10</max_clients>
+	<max_messages>5</max_messages>
+</config>
