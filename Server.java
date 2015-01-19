@@ -1,23 +1,34 @@
 package chat;
 
 import java.net.*;
+
 import java.io.*;
-import java.util.*;
+//import java.io.File;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Date;
+
 
 public class Server
 {
-	final static int port = 1234;
-    private static boolean acceptMore = true;
-	private static int clientCounter = 0;
+	
+    private boolean isWorking = true;
+	private int clientCounter = 0;
 	private static LinkedList<Message> lastMessages;
-	private final static int limitMessage = 10;
+	
+	private int limitMessage;
+	private int limitClient;
+	private int port;
 	
 	
 	
 	 public static void main(String[] args)
 	 {
-		 //ArrayList<ConnectionHadler> connections = new ArrayList<ConnectionHadler>();		 
-		 new Server();
+		 
+		 ConfigParser cfgp = new ConfigParser("chat\\config.xml");
+		  
+		 new Server(cfgp.getServerConfig());
 	
 	 }
 	 
@@ -26,22 +37,28 @@ public class Server
 	 
 	 private ArrayList<ClientConnection> clients = new ArrayList<ClientConnection>();
 	 
-	 public Server()
-	 {		 
-		 		 
+	 public Server(ServerConfig cfg)
+	 {		
+		this.port = cfg.getPort();
+		this.limitClient = cfg.getLimitClients();
+		this.limitMessage = cfg.getLimitMessages();
+		
+	 
 		 ServerSocket serverSocket = null;
 		 lastMessages = new LinkedList<Message>();
 		 try
 		 {
 			 serverSocket = new ServerSocket(port);
 			 System.out.println("Server is listening on port " + port);
-			 while(acceptMore)
+			 System.out.println("Number of cached messages: " + limitMessage);
+			 System.out.println("Maximum clients limit: " + limitClient);
+			 while(isWorking)
 			 {
 				Socket clientSocket = serverSocket.accept();
 				//new Thread(new SocketThread(clientSocket)).start();
 				System.out.println("New client #" + clientCounter + " connected!\n");
 				addConnection(clientSocket);
-				clientCounter++;
+				
 			 }
 		} catch (IOException e)
 			{
@@ -58,18 +75,7 @@ public class Server
 		 		 
 	 }
 	 
-/*	 
-	 synchronized void addMessage(String message)
-	 {
-		 if (lastMessages.size() < limitMessage)
-		 {
-			lastMessages.add(message);
-		 } else {
-			lastMessages.removeFirst();
-			lastMessages.add(message);
-		 }		 
-	 }
-*/ 
+
 	 synchronized void addMessage(Message message)
 	 {
 		 if (lastMessages.size() < limitMessage)
@@ -85,18 +91,23 @@ public class Server
 	 
 	 synchronized void addConnection(Socket s)
 	 {
-		ClientConnection conn = new ClientConnection(this, s);
-		clientCounter++;
-		for (Message msg : lastMessages) 
+		if (clientCounter < limitClient)
 		{
-			conn.send(msg);
+			ClientConnection conn = new ClientConnection(this, s);		
+			for (Message msg : lastMessages) 
+			{
+				conn.send(msg);
+			}
+			clients.add(conn);
+			clientCounter++;
 		}
-		clients.add(conn);
+		
 	 }
 	 
 	 synchronized void removeConnection(ClientConnection conn)
 	 {
 		 clients.remove(conn);
+		 clientCounter--;
 	 }
 	 
 	 synchronized void broadcast(Message msg)
@@ -148,7 +159,7 @@ public class Server
 				broadcast(msg);
 			}
 			
-			System.out.println("Connection to server is lost!");
+			System.out.println("Client disconnected!");
 			close(); 
 		 }
 		 

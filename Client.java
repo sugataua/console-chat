@@ -21,10 +21,11 @@ public class Client
 		try
 		 {
 			 BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
-		     do{
-			 System.out.println("Please, write your user name for chat: \n Notice, that name length must be more or equal then 3 symbol!");			 
-			 this.userName = keyboard.readLine();
-			 } while(this.userName.length() >= 3);
+		     do
+			 {
+				System.out.println("Please, write your user name for chat: \n Notice, that name length must be more or equal then 3 symbol!");			 
+				this.userName = keyboard.readLine();
+			 } while(this.userName.length() < 3);
 			 System.out.println("OK, your user-name is: " + userName);	
 			 
 			 this.address = InetAddress.getLocalHost();
