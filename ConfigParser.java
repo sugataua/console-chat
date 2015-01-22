@@ -17,6 +17,12 @@ import org.w3c.dom.Element;
 
 import org.xml.sax.SAXException;
 
+
+/**
+ * Configuration parser extracts configuration parameters from XML file
+ * @author Sergii Karpenko
+ */
+
 public class ConfigParser
 {
 	final static String PORT = "port";
@@ -25,6 +31,9 @@ public class ConfigParser
 	
 	private Document doc;
 	
+	/**
+	 * Reads data from file and creates Document model
+	 */	
 	public ConfigParser(String path)
 	{
 		try
@@ -34,6 +43,7 @@ public class ConfigParser
 			 DocumentBuilder db = dbf.newDocumentBuilder();
 			 doc = db.parse(file);
 			 
+			 // Reason: http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
 			 doc.getDocumentElement().normalize();
 			 
 		 } catch(ParserConfigurationException pcex) {
@@ -45,6 +55,10 @@ public class ConfigParser
 		 } 
 	}
 	
+	/**
+	 * Gets from params from XML-model
+	 * @return Server configuration object
+	 */
 	public ServerConfig getServerConfig() {
 		ServerConfig cfg = null;
 		try

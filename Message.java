@@ -5,8 +5,7 @@ import java.util.Date;
 
 /**
  * This serializable class describes chat message for simple console chat.
- * @author Sergii Karpenko
- * @version 1.0
+ * @author Sergii Karpenko 
  */
 
 public class Message implements Serializable

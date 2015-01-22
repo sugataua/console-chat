@@ -1,5 +1,8 @@
 package chat;
 
+/**
+ * Class contains parameters for server configuration
+ */
 public class ServerConfig
 {
 	private int limitMessages;
